@@ -1,322 +1,199 @@
 <!DOCTYPE html>
-
- 
-
 <html lang="en">
 
-  <head>
+<head>
+	<link href="./resources/css/index.css" type="text/css" rel="stylesheet" />
+	<meta charset="utf-8" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body onload="load_function()">
+	<div class="container-fluid">
+		
+				
+	<!--	<h3 style="display: inline-block">Welcome Mr Manager</h3>-->
+		<div style="display: inline-flex">
+		<table class="table" style="display: flexblock" 	>
+				<thead class="thead-dark">
+				  <tr>
+					<th scope="col">#</th>
+					<th scope="col">Checkin</th>
+					<th scope="col">Checkout</th>
+					
+				  </tr>
+				</thead>
+				<tbody>
+				  <tr>
+					<th scope="row">g</th>
+					<td>0830</td>
+					<td>1730</td>
+					
+				  </tr>
+				  <tr>
+					<th scope="row">d</th>
+					<td>0830</td>
+					<td>2030</td>
+					
+				  </tr>
+				  <tr>
+					<th scope="row">n</th>
+					<td>2030</td>
+					<td>0830</td>
+				  </tr>
+				</tbody>
+			  </table>
+			  <table class="table" style="display: flexblock"	>
+					<thead class="thead-dark">
+					  <tr>
+						<th scope="col">#</th>
+						<th scope="col">Checkin</th>
+						<th scope="col">Checkout</th>
+						
+					  </tr>
+					</thead>
+					<tbody>
+					  <tr>
+						<th scope="row">o</th>
+						<td>-</td>
+						<td>-</td>
+						
+					  </tr>
+					  <tr>
+						<th scope="row">l</th>
+						<td>leave</td>
+						<td>leave</td>
+						
+					  </tr>
+					  <tr>
+						<th scope="row">h</th>
+						<td>public holiday</td>
+						<td>public holiday</td>
+						
+					  </tr>
+					</tbody>
+				  </table>
+				</div>
+		<div class="card">
+			<div class="form-inline" style="display: inline-block">
+				<h3 class="card-header" id="monthAndYear"></h3>
+			</div>
+			<br />
+			<div class="form-inline">
+				<button class="btn btn-primary col-sm-6" id="previous" onclick="previous()"> Previous </button>
+				<button class="btn btn-primary col-sm-6" id="next" onclick="next()"> Next </button>
+			</div>
+			<form id="form" method="POST" autocomplete="on" enctype=multipart/form-data>
+				<table class="table table-striped table-responsive-sm" id="calendar">
+					<thead>
+						<tr>
+							<th name = "day_of_week" scope="col"></th>
+							<th name = "day_of_week" scope="col">Mon</th>
+							<th name = "day_of_week" scope="col">Tue</th>
+							<th name = "day_of_week" scope="col">Wed</th>
+							<th name = "day_of_week" scope="col">Thu</th>
+							<th name = "day_of_week" scope="col">Fri</th>
+							<th name = "day_of_week" scope="col">Sat</th>
+							<th name = "day_of_week" scope="col">Sun</th>
+							<th name = "hours worked" scope="col">Hrs Worked</th>
+							
+						</tr>
+					</thead>
+					<tbody id="calendar-body">
+					</tbody>
+				</table>
+			</form>
+			<button class="btn btn-primary col-sm-6" onclick="addRow()"> Add </button>
+			<button class="btn btn-primary col-sm-6" onclick="deleteRow()"> Delete </button>
+			</button>
+			<button class="btn btn-primary col-sm-6" onclick="copyForRestOfWeek()"> Copy for rest of the week </button>
+			<input class = "btn btn-primary col-sm-6" type='submit' id="save" value="Save me daddy" onclick="saveTable()">
+	<!--		<input type="submit" id="copyForWeek" value="Copy for rest of week" onClick="copyForRestOfWeek()">-->
+			<br />
+		</div>
+  </div>
+  <br>
+  <br>
+  <div> Practise
+
+    <input type = "text" name = "firstname" value = "hello"> 
+    <input type = "text" name = "firstname" value = "hellohello"> 
     
-    <link href="./resources/css/index.css" type="text/css" rel="stylesheet" />
-
-    <meta charset="utf-8" />
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  </head>
-
- 
-
-  <body>
-
-    <div class="container-fluid">
-
-      <h3>Welcome Mr Manager</h3>
-
-      <div class="card">
-
-          <div class="form-inline">
-
-        <h3 class="card-header" id="monthAndYear"></h3>
-
-      
-
-          </div>
-
-          <br/>
-
-        <div class="form-inline">
-
-          <button
-
-            class="btn btn-outline-primary col-sm-6"
-
-            id="previous"
-
-            onclick="previous()"
-
-          >
-
-            Previous
-
-          </button>
-
- 
-
-          <button
-
-            class="btn btn-outline-primary col-sm-6"
-
-            id="next"
-
-            onclick="next()"
-
-          >
-
-            Next
-
-          </button>
-
-        </div>
-
-        <form id = "form" method="POST">
-
-        <table class="table table-bordered table-responsive-sm" id="calendar">
-
-          <thead>
-
-            <tr>
-
-              <th scope="col"></th>
-
- 
-
-              <th scope="col">Mon</th>
-
- 
-
-              <th scope="col">Tue</th>
-
- 
-
-              <th scope="col">Wed</th>
-
- 
-
-              <th scope="col">Thu</th>
-
- 
-
-              <th scope="col">Fri</th>
-
- 
-
-              <th scope="col">Sat</th>
-
- 
-
-              <th scope="col">Sun</th>
-
-            </tr>
-
-          </thead>
-
- 
-
-          <tbody id="calendar-body" style="border:dotted">
-
-        
-            
-            <script>
-
-              $(".dropdown").attr("aria-labelledby", "dropdownMenuButton");
-
-              $(".btn btn-secondary dropdown-toggle").attr(
-
-                "data-toggle",
-
-                "dropdown"
-
-              );
-
-              $(".btn btn-secondary dropdown-toggle").attr(
-
-                "aria-haspopup",
-
-                "true"
-
-              );
-
-              $(".btn btn-secondary dropdown-toggle").attr(
-
-                "aria-expanded",
-
-                "false"
-
-              );
-
-            </script>
-
-          </tbody>
-
-        </table>
-
-        </form>
-
-        <button class="btn btn-outline-primary col-sm-6" onclick="addRow()">
-
-          Add
-
-        </button>
-
-        <button class="btn btn-outline-primary col-sm-6" onclick="deleteRow()">
-
-          Delete
-
-        </button>
-
-      </button>
-
-      <button class="btn btn-outline-primary col-sm-6" onclick="deleteRow()">
-
-        Copy for rest of the week
-
-      </button>
-
-       <input type ='submit' id ="save">
-
-        <br />
-
- 
-      </div>
-
-    </div>
-
- 
-
-    <!--<button name="jump" onclick="jump()">Go</button>-->
-
- 
-
-    <!-- Optional JavaScript for bootstrap -->
-
- 
-
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-    <script type="text/javascript" src="./resources/js/index.js"></script>
-
-    <script type="text/javascript" src="./resources/js/date.js"></script>
-
-    <script
-
-      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-
-      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-
-      crossorigin="anonymous"
-
-    ></script>
-
-    <script
-
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
-
-      integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
-
-      crossorigin="anonymous"
-
-    ></script>
-
- 
-
-    <script
-
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
-
-      integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
-
-      crossorigin="anonymous"
-
-    ></script>
-
- 
-
-    <link
-
-      rel="stylesheet"
-
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
-
-    />
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-
-  </body>
+    <span ><select id="droptest"><option>:)</option><option role="menuitem" href="#" onclick="change()">g</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">d</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">n</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">o</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">l</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">h</option></select></span>
+    <input type = "submit" onClick = "savePractise()" value = "please submit">
+  </div>
+
+	<!--<button name="jump" onclick="jump()">Go</button>-->
+	<!-- Optional JavaScript for bootstrap -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script type="text/javascript" src="./resources/js/index.js"></script>
+	<script type="text/javascript" src="./resources/js/date.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</body>
 
 </html>
-
-
-
-
 <!--
+
 place below in between <td>dropdown</td>
+
 <div class="dropdown">
+
   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
     Dropdown button
+
   </button>
+
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
     <a class="dropdown-item" href="#">Action</a>
+
     <a class="dropdown-item" href="#">Another action</a>
+
     <a class="dropdown-item" href="#">Something else here</a>
+
   </div>
+
 </div>
 
+ 
+
 deleted rows from table
+
 https://www.geeksforgeeks.org/html-dom-table-deleterow-method/
+
 -->
-
-
-
 <!-- creating dynamic html elements
 
+ 
+
 https://codeburst.io/learn-how-to-create-html-elements-with-plain-javascript-4f1323f96252
+
 https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement
+
 https://stackoverflow.com/questions/220603/is-there-a-best-practice-for-generating-html-with-javascript
+
 https://owlcation.com/stem/How-to-control-values-displayed-in-one-HTML-Dropdown-List-with-the-other-using-simple-JavaScript
+
 https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php
+
 http://zerosixthree.se/snippets/get-week-of-the-year-with-jquery/
+
+ 
 
 https://medium.com/@nitinpatel_20236/challenge-of-building-a-calendar-with-pure-javascript-a86f1303267d
 
-Look at code for
-https://fullcalendar.io/
-
--->
-<!--
-place below in between <td>dropdown</td>
-<div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown button
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
-  </div>
-</div>
-
-deleted rows from table
-https://www.geeksforgeeks.org/html-dom-table-deleterow-method/
--->
-
-
-
-<!-- creating dynamic html elements
-
-https://codeburst.io/learn-how-to-create-html-elements-with-plain-javascript-4f1323f96252
-https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement
-https://stackoverflow.com/questions/220603/is-there-a-best-practice-for-generating-html-with-javascript
-https://owlcation.com/stem/How-to-control-values-displayed-in-one-HTML-Dropdown-List-with-the-other-using-simple-JavaScript
-https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php
-http://zerosixthree.se/snippets/get-week-of-the-year-with-jquery/
-
-https://medium.com/@nitinpatel_20236/challenge-of-building-a-calendar-with-pure-javascript-a86f1303267d
+ 
 
 Look at code for
+
 https://fullcalendar.io/
+
+ 
 
 -->
