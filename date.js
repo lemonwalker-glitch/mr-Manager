@@ -3,6 +3,7 @@ let currentMonth = today.getMonth(); // 8 (Jan is 0)
 let currentYear = today.getFullYear(); //2019
 let selectYear = document.getElementById("year");
 let selectMonth = document.getElementById("month");
+
 names = [];
 creampie = [":)"];
 let months = [
@@ -26,18 +27,18 @@ let currentSunday = getSunday();
 //shift schedule
 routine = {
   g: {
-    checkin: "0830",
-    checkout: "1730",
+    checkin: "08:30",
+    checkout: "17:30",
     hoursWorked: 9
   },
   d: {
-    checkin: "0830",
-    checkout: "2030",
+    checkin: "08:30",
+    checkout: "20:30",
     hoursWorked: 12
   },
   n: {
-    checkin: "2030",
-    checkout: "0830",
+    checkin: "20:30",
+    checkout: "08:30",
     hoursWorked: 12
   },
   o: {
@@ -71,6 +72,11 @@ function getMonday() {
 }
 
 function next() {
+  
+  if (confirm("All unsaved progress will be lost!")){
+    
+       
+    
   var nextSunday = currentSunday.getDate() + 7;
   var sunday_month = currentSunday.getMonth();
   var sunday_year = currentSunday.getFullYear();
@@ -101,10 +107,74 @@ function next() {
 
   currentSunday = new Date(sunday_year, sunday_month, nextSunday);
   //showCalendar(currentMonth, currentYear, currentMonday, currentSunday);
+  let munday = currentMonday;
+  let sonday = currentSunday;
+  let month = currentMonth;
+  let year = currentYear;
+  munday = munday.toString();
+  munday = munday.substring(0, 10);
+  sonday = sonday.toString();
+  sonday = sonday.substring(0, 10);
+  monthAndYear2 =
+    months[month] + " " + year + " " + munday + " - " + sonday;
+    
+  
+  if (localStorage.getItem(monthAndYear2) == null) {
+    if (confirm("Do you want to copy this week's schedule into the next week?")){
+    
+      var employeeNames = document.getElementsByName("employeeName");
+      var cell_values = document.getElementsByName("dropdown_value");
+      var cell_Value_String = [];
+      var call_checkin = [];
+      var call_checkout = [];
+      
+      for (let idx = 0; idx < cell_values.length; idx++) {
+        var check_in = "";
+        var check_out = "";
+        cell_Value_String.push(cell_values[idx].value);
+        check_in = checkin_check_value(cell_values[idx]);
+        check_out = checkout_check_value(cell_values[idx]);
+        call_checkin.push(check_in);
+        call_checkout.push(check_out);
+       
+      }
+        
+      var jsonToSave = [];
+      let cv = 0;
+      var item = {};
+      for (let nom = 0; nom < employeeNames.length; nom++) {
+        console.log(employeeNames[nom].value);
+        console.log(cell_Value_String.slice(cv, cv + 7));
+        item = {
+          name: employeeNames[nom].value,
+          schedule: cell_Value_String.slice(cv, cv + 7),
+          checkin: call_checkin.slice(cv, cv + 7),
+          checkout: call_checkout.slice(cv, cv + 7)
+        };
+   
+        jsonToSave.push(item);
+        item = {};
+        cv += 7;
+      }
+  
+      
+      window.localStorage.setItem(
+        monthAndYear2,
+        JSON.stringify(jsonToSave)
+      );
+      load_function();
+    }else{
+      load_function();
+      }
+        
+  }else{
   load_function();
+}
+}
 }
 
 function previous() {
+  if (confirm("All unsaved progress will be lost!")){
   var nextSunday = currentSunday.getDate() - 7;
   var sunday_month = currentSunday.getMonth();
   var sunday_year = currentSunday.getFullYear();
@@ -140,6 +210,7 @@ function previous() {
   //showCalendar(currentMonth, currentYear, currentMonday, currentSunday);
   load_function();
 }
+}
 
 function getSunday() {
   var sunday = new Date(currentMonday).getDate() + 6; //Get date (in 30 days of monday) and add 7, for next monday
@@ -152,12 +223,34 @@ function getSunday() {
 function createButton(k, j) {
   let spam = document.createElement("span");
   let hidden_checkin = document.createElement("input");
-  hidden_checkin.setAttribute("class", "hide");
-  hidden_checkin.setAttribute("style", "width: 50px");
+  if (schedule[k][j] == "c"){
+    hidden_checkin.setAttribute("class", "show");
+    hidden_checkin.setAttribute("style", "width: 50px");
+    hidden_checkin.value = checkin_time[k][j];
+    }
+  else{
+    hidden_checkin.setAttribute("class", "hide"); 
+    hidden_checkin.setAttribute("style", "width: 50px");
+    hidden_checkin.value = checkin_time[k][j];
+    }
+  //hidden_checkin.setAttribute("class", "hide"); //add if statement that chceks if schedule[k][j] is "c", if it is then setattribute class show or else hide.
+  //hidden_checkin.setAttribute("style", "width: 50px");
+  //hidden_checkin.value = add this here to set the default value with k, j
   spam.appendChild(hidden_checkin);
   let hidden_checkout = document.createElement("input");
-  hidden_checkout.setAttribute("class", "hide");
-  hidden_checkout.setAttribute("style", "width: 50px");
+  if (schedule[k][j] == "c"){
+    hidden_checkout.setAttribute("class", "show");
+    hidden_checkout.setAttribute("style", "width: 50px");
+    hidden_checkout.value = checkout_time[k][j];
+    }
+  else{
+    hidden_checkout.setAttribute("class", "hide"); 
+    hidden_checkout.setAttribute("style", "width: 50px");
+    hidden_checkout.value = checkout_time[k][j];
+    }
+  //hidden_checkout.setAttribute("class", "hide"); //add if statement that chceks if schedule[k][j] is "c", if it is then setattribute class show or else hide.
+  //hidden_checkout.setAttribute("style", "width: 50px");
+  //hidden_checkout.value = add this here to set the default value with k, j
   spam.appendChild(hidden_checkout);
   let options = createOptions(k, j);
   spam.appendChild(options);
@@ -205,15 +298,27 @@ var dropdown_value = document.getElementById("droptest");
 
 function promptC(x) {
   var cValue = x.value;
-
+  thenum = x.id.match(/\d+/)[0];
+  console.log(thenum);
+  var therow = $(x).closest('tr').attr('id');
+  therow = therow.match(/\d+/)[0];
+  console.log("The row is: " + therow);
+  schedule[therow][thenum] = x.value;
   if (cValue == "c") {
     // c_checkout = prompt("Please enter a value");
     //x.className = "hide";
     console.log("hello", x.parentElement.childNodes[0]);
+    x.parentElement.childNodes[0].value = "10:00";
     x.parentElement.childNodes[0].className = "show";
     // x.parentElement.childNodes[0].value = c_checkout;
     x.parentElement.childNodes[1].className = "show";
-
+  }
+  if (cValue != "c"){
+    x.parentElement.childNodes[0].className = "hide";
+    x.parentElement.childNodes[0].value = "10:00";
+    console.log(x.parentElement.childNodes[0].value);
+    x.parentElement.childNodes[1].className = "hide";
+    }
     // checkin = prompt("Please enter your desired checkin time:");
     // checkout = prompt("Please enter your desired check-out time:");
     // var checkin_button = document.createElement("input");
@@ -227,7 +332,7 @@ function promptC(x) {
     // x = x.appendChild(checkin_button);
     // x = x.appendChild(checkout_button);
     // return x;
-  }
+  
 }
 
 // var f = document.getElementById("dN[" + fieldsd + "]"); // create/insert new
@@ -272,17 +377,17 @@ function showCalendar(month, year, monday, sunday) {
   let firstDay = new Date(year, month).getDay();
   let daysInMonth = 32 - new Date(year, month, 32).getDate();
   let tbl = document.getElementById("calendar-body"); // body of the calendar
-  let munday = monday;
-  munday = munday.toString();
-  munday = munday.substring(0, 10);
-  let sonday = sunday;
-  sonday = sonday.toString();
-  sonday = sonday.substring(0, 10);
+  //let munday = monday;
+  //munday = munday.toString();
+  //munday = munday.substring(0, 10);
+  //let sonday = sunday;
+  //sonday = sonday.toString();
+  //sonday = sonday.substring(0, 10);
   // clearing all previous cells
   tbl.innerHTML = "";
   // filing data about month and in the page via DOM.
-  monthAndYear.innerHTML =
-    months[month] + " " + year + " " + munday + " - " + sonday;
+  //monthAndYear.innerHTML =
+  //  months[month] + " " + year + " " + munday + " - " + sonday;
   //  selectYear.value = year;
   //selectMonth.value = month;
   // creating all cells
@@ -295,6 +400,7 @@ function showCalendar(month, year, monday, sunday) {
     let header_input = document.createElement("input"); //input for name
     header_input.setAttribute("type", "text");
     header_input.setAttribute("name", "employeeName"); // value = document.getElementsByNames("employeeName")[0].value for the first employee etc.
+    header_input.setAttribute("onblur", "dyn_name()")
     header_input.setAttribute("value", names[k]); //filling the name input
     header.appendChild(header_input);
     row.appendChild(header);
@@ -317,6 +423,15 @@ function showCalendar(month, year, monday, sunday) {
     tbl.appendChild(row);
   }
 }
+
+
+function dyn_name(){
+  let x = document.getElementsByName("employeeName");
+  for (let i = 0; i < x.length; i++){
+    names[i] = x[i].value;
+  }
+}
+
 function calculateHoursWorked(e) {
   var x = document.getElementById(e);
   x = x.parentElement;
@@ -433,13 +548,55 @@ console.log(
 
 var datelog = new Array(); //this will contain date and string in local cache.
 
+function checkin_check_value(cell_value){
+  if (cell_value.value == "g"){
+    return routine.g.checkin;
+    } else if (cell_value.value == "d"){
+      return routine.d.checkin;
+    }else if (cell_value.value == "n"){
+        return routine.n.checkin;
+      }else if (cell_value.value == "c"){
+          return cell_value.parentElement.childNodes[0].value
+        }
+
+  
+  }
+  
+function checkout_check_value(cell_value){
+  if (cell_value.value == "g"){
+    return routine.g.checkout;
+    } else if (cell_value.value == "d"){
+      return routine.d.checkout;
+    }else if (cell_value.value == "n"){
+        return routine.n.checkout;
+      }else if (cell_value.value == "c"){
+          return cell_value.parentElement.childNodes[1].value
+        }
+
+
+  
+}
+
+
 function saveTable() {
-  //console.log("save button clicked");
+  console.log("save button clicked");
   var employeeNames = document.getElementsByName("employeeName");
   var cell_values = document.getElementsByName("dropdown_value");
   var cell_Value_String = [];
+  var call_checkin = [];
+  var call_checkout = [];
+  
   for (let idx = 0; idx < cell_values.length; idx++) {
+    var check_in = "";
+    var check_out = "";
     cell_Value_String.push(cell_values[idx].value);
+    console.log(cell_values[idx].value);
+    check_in = checkin_check_value(cell_values[idx]);
+    check_out = checkout_check_value(cell_values[idx]);
+    console.log(check_in + " " + " " + check_out);
+    call_checkin.push(check_in);
+    call_checkout.push(check_out);
+   
   }
   var jsonToSave = [];
   let cv = 0;
@@ -449,7 +606,9 @@ function saveTable() {
     console.log(cell_Value_String.slice(cv, cv + 7));
     item = {
       name: employeeNames[nom].value,
-      schedule: cell_Value_String.slice(cv, cv + 7)
+      schedule: cell_Value_String.slice(cv, cv + 7),
+      checkin: call_checkin.slice(cv, cv + 7),
+      checkout: call_checkout.slice(cv, cv + 7)
     };
     //item["name"] = item[employeeNames[nom].value];
     //item["schedule"] = cell_Value_String.slice(cv, cv + 7);
@@ -458,14 +617,21 @@ function saveTable() {
     item = {};
     cv += 7;
   }
-
+  console.log("perform ajax1");
   datelog.push(monthAndYear.innerHTML, JSON.stringify(jsonToSave));
   window.localStorage.setItem(
     monthAndYear.innerHTML,
     JSON.stringify(jsonToSave)
   );
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("POST", "/shiftschedule");
+  xmlhttp.setRequestHeader("Content-Type", "application/json");
+  xmlhttp.send(JSON.stringify(datelog));
 }
 var schedule = [];
+var checkin_time = [];
+var checkout_time = [];
+
 function parseLocalStorage(text) {
   //converting string into json
   var obj = JSON.parse(text); //obj[0] will load
@@ -477,23 +643,42 @@ function parseLocalStorage(text) {
     console.log(obj[i].schedule);
     names.push(obj[i].name);
     schedule.push(obj[i].schedule);
+    checkin_time.push(obj[i].checkin);
+    checkout_time.push(obj[i].checkout);
     //   console.log(obj[i].schedule[1]);
   }
   return names;
 }
 
 function load_function() {
+  names = [];
+  schedule = [];
+  checkin_time = [];
+  checkout_time = [];
+  let munday = currentMonday;
+  let sonday = currentSunday;
+  let month = currentMonth;
+  let year = currentYear;
+  munday = munday.toString();
+  munday = munday.substring(0, 10);
+  sonday = sonday.toString();
+  sonday = sonday.substring(0, 10);
+  monthAndYear.innerHTML =
+    months[month] + " " + year + " " + munday + " - " + sonday;
   if (localStorage.getItem(monthAndYear.innerHTML) != null) {
     var localStorageString = localStorage.getItem(monthAndYear.innerHTML); //saving as a string
     names = parseLocalStorage(localStorageString);
     console.log("I am insinde the first if");
     showCalendar(currentMonth, currentYear, currentMonday, currentSunday);
   } else {
-    names = [];
-    schedule = [];
+   
     names.push("");
     schedule_array = [":)", ":)", ":)", ":)", ":)", ":)", ":)"];
+    checkin_time_array = ["","","","","","",""];
+    checkout_time_array = ["","","","","","",""];
     schedule.push(schedule_array);
+    checkin_time.push(checkin_time_array);
+    checkout_time.push(checkout_time_array);
     showCalendar(currentMonth, currentYear, currentMonday, currentSunday);
   }
 }
