@@ -1,14 +1,16 @@
 // -------- GLOBAL INITIALISATIONS ---------
 //all date related initialisations
 let today = new Date();
-let currentMonth = today.getMonth(); // 8 (Jan is 0)
-let currentYear = today.getFullYear(); //2019
+
 let selectYear = document.getElementById("year");
 let selectMonth = document.getElementById("month");
 let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 let monthAndYear = document.getElementById("monthAndYear");
 let currentMonday = getMonday(); //Mon Sep 09 2019 18:01:51 GMT+0800 (Singapore Standard Time)
+let currentMonth = currentMonday.getMonth(); // 8 (Jan is 0)
+let currentYear = currentMonday.getFullYear(); //2019 
 let currentSunday = getSunday();
+
 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 //All table generation related initialisations
@@ -404,6 +406,360 @@ function load_function() {
 }
 
 // ------------ LOCAL STORAGE FUNCTIONS END -------------------
+
+function getNames(){
+
+}
+
+function createExcel(){
+  // get all september keys
+  var curMonthKeyValues = [];
+  var schedule_month = [];
+  var names_month = [];
+  var doesNameExist = false;
+  for (i = 0 ; i < names.length; i++){
+    schedule_month[i] = new Array(32 - new Date(currentYear, currentMonth, 32).getDate());
+  }
+  var i_track = 0;
+  for (let i = 0; i < localStorage.length; i++){
+    //console.log(localStorage.getItem(localStorage.key(i)));
+    if (localStorage.key(i).includes(months[currentMonth])){
+      curMonthKeyValues.push(localStorage.key(i));
+      let names_check = localStorage.getItem(localStorage.key(i));
+      names_check = JSON.parse(names_check);
+      
+      for (let q = 0; q < names_check.length; q++){
+        for (p in names_month){
+          if (names_month[p].includes(names_check[q].name)){
+            doesNameExist = true;
+            break;
+          }else{
+            doesNameExist = false;
+          }
+        }
+        if (doesNameExist == false){
+          names_month.push(names_check[q].name);
+        }
+      
+    }
+  }
+}
+  console.log(names_month);
+  var orderedKeys = new Array(curMonthKeyValues.length);
+  var firstWeek = 0;
+  for (k =0; k< curMonthKeyValues.length; k++){
+    var res = curMonthKeyValues[k].split(" ");
+    if (res[0] == months[currentMonth - 1]){
+      firstWeek = parseInt(res[8], 10);
+      orderedKeys[0] = curMonthKeyValues[k];
+    }
+  }
+  console.log(firstWeek);
+  var daysInMonth2 =  32 - new Date(currentYear, currentMonth, 32).getDate();
+
+  for (let j = 0; j < curMonthKeyValues.length; j++){
+    var res = curMonthKeyValues[j].split(" ");
+    res[8] = parseInt(res[8], 10);
+    if (res[7] == months[currentMonth]){
+      if (res[8] <= daysInMonth2){
+        if (res[8] == firstWeek + 7){
+          orderedKeys[1] = curMonthKeyValues[j];
+        }
+        else if (res[8] == firstWeek + 14){
+          orderedKeys[2] = curMonthKeyValues[j];
+        }
+        else if (res[8] == firstWeek + 21){
+          orderedKeys[3] = curMonthKeyValues[j];
+        }
+        else if (res[8] == firstWeek + 28){
+          orderedKeys[4] = curMonthKeyValues[j];
+        }
+      }
+    }
+    else{
+      orderedKeys[curMonthKeyValues.length - 1] = curMonthKeyValues[j]
+    }
+  }
+  console.log(orderedKeys);
+
+  var fullList = [];
+  var obj = {};
+
+  for (name in names_month){
+    obj = {
+      name: names_month[name],
+      schedule: [],
+      checkin: [],
+      checkout: []
+    }
+
+    fullList.push(obj);
+    obj = {};
+  }
+
+  
+  //console.log(fullList);
+
+  //Get information from the first day
+
+  let firstWeekNum = orderedKeys[0].split(" ");
+  firstWeekNum[8] = parseInt(firstWeekNum[8], 10);
+  dayStart = 7 - firstWeekNum[8];
+  var firstWeekData = localStorage.getItem(orderedKeys[0]);
+  firstWeekData = JSON.parse(firstWeekData);
+  doesNameExist = false;
+  for (name in names_month){
+    for (let q = 0; q < firstWeekData.length; q++){
+      if (firstWeekData[q].name.match(/^\s*$/) == null && names_month[name].includes(firstWeekData[q].name)){
+        for (let i = dayStart; i < 7; i++){
+          fullList[name].schedule.push(firstWeekData[q].schedule[i]);
+          fullList[name].checkin.push(firstWeekData[q].checkin[i]);
+          fullList[name].checkout.push(firstWeekData[q].checkout[i]);
+        }
+        doesNameExist = true;
+        break;    
+      }
+      else {
+        doesNameExist = false;
+      }
+    }
+    if (doesNameExist == false){
+      for (let j = dayStart; j < 7; j++){
+        fullList[name].schedule.push("NA");
+        fullList[name].checkin.push("NA");
+        fullList[name].checkout.push("NA");
+      }
+    }
+    
+  }
+  console.log(fullList);
+
+  // get the middle part of the data
+  doesNameExist = false;
+  for (name in names_month){
+    for (let key = 1; key < orderedKeys.length - 1; key++){
+      var weekData = localStorage.getItem(orderedKeys[key]);
+      //console.log(orderedKeys[key]);
+      weekData = JSON.parse(weekData);
+      for (let q = 0; q < weekData.length; q++){
+        console.log(weekData[q].name);
+        if (names_month[name].includes(weekData[q].name)){
+          for (let i = 0; i < 7; i++){
+            fullList[name].schedule.push(weekData[q].schedule[i]);
+            fullList[name].checkin.push(weekData[q].checkin[i]);
+            fullList[name].checkout.push(weekData[q].checkout[i]);
+          }
+          doesNameExist = true;
+          break;
+        }
+        else {
+          doesNameExist = false;
+        }
+      }
+      if (doesNameExist == false){
+        for (let j = 0; j < 7; j++){
+          fullList[name].schedule.push("NA");
+          fullList[name].checkin.push("NA");
+          fullList[name].checkout.push("NA");
+        }
+        
+      }
+    }   
+        
+  }
+
+  console.log(fullList);
+
+  //Get the data from the last week
+  let lastWeekNum = orderedKeys[orderedKeys.length - 1].split(" ");
+  lastWeekNum[4] = parseInt(lastWeekNum[4], 10);
+  let daysInMonth = 32 - new Date(currentYear, currentMonth, 32).getDate();
+  var dayEnd = daysInMonth - lastWeekNum[4];
+  var lastWeekData = localStorage.getItem(orderedKeys[orderedKeys.length - 1]);
+  lastWeekData = JSON.parse(lastWeekData);
+  doesNameExist = false;
+
+  for (name in names_month){
+    for (let q = 0; q < lastWeekData.length; q++){
+      if (lastWeekData[q].name.match[/^\s*$/] == null && names_month[name].includes(lastWeekData[q].name)){
+        for (let i = 0; i <= dayEnd; i++){
+          fullList[name].schedule.push(lastWeekData[q].schedule[i]);
+          fullList[name].checkin.push(lastWeekData[q].checkin[i]);
+          fullList[name].checkout.push(lastWeekData[q].checkout[i]);
+        }
+        doesNameExist = true;
+        break;
+      }
+      else {
+        doesNameExist = false;
+      }
+    }
+    if (doesNameExist == false){
+      for (let j = 0; j <= dayEnd; j++){
+        fullList[name].schedule.push("NA");
+        fullList[name].checkin.push("NA");
+        fullList[name].checkout.push("NA");
+      }
+    }
+  }
+  console.log(fullList);
+  /*
+  var workbook = XLSX.utils.book_new(); //creating new excel book
+	workbook.Props = {		//excel file properties
+		Title: "Shift Schedhule",
+		Subject: "Test file",
+		Author: "Lemon Walker",
+		CreatedDate: new Date()
+	};
+	
+	workbook.SheetNames.push("Test Sheet"); //array of sheet names
+	var wsData = [["herro","world"], ["herro", "again"]]		//create new spreadsheet. each element is a cell
+	var ws = XLSX.utils.aoa_to_sheet(fullList); //adding to sheet
+	workbook.Sheets["Test Sheet"] = ws;	//refering the sheetname and adding the values
+
+	var wbout = XLSX.write(workbook, {bookType:"xlsx", type:"binary"});
+  saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), "test.xlsx");*/
+  
+        /* File Name */
+  var filename = "FreakyJSON_To_XLS.xlsx";
+
+  /* Sheet Name */
+  var ws_name = "FreakySheet";
+
+  finalList = fullList;
+  //var animalWS = XLSX.utils.json_to_sheet(fullList);
+  //console.log(animalWS); 
+  
+  //var onerow = [["herro world", "herro world!"]];
+  let excelData = [];
+  let firstRow = [];
+  firstRow.push("Name");
+  //add header info, date in the format 1-Sep-2019
+  for (let i = 1; i <= daysInMonth; i++){
+    firstRow.push(i + "-" + months[currentMonth] + "-" + currentYear);
+    firstRow.push("Check in - Check Out");
+  }
+
+  excelData.push(firstRow);
+  for (let i = 0; i < fullList.length; i++){
+    let rowData = [];
+    rowData.push(fullList[i].name);
+
+    for (let j = 0; j < daysInMonth; j++){
+      rowData.push(fullList[i].schedule[j]);
+      rowData.push(fullList[i].checkin[j] + " - " + fullList[i].checkout[j]);
+    }
+    excelData.push(rowData);
+  }
+
+
+/*
+  var onerow = [];
+  onerow.push(finalList[1].name);
+  onerow.push(finalList[1].schedule[1]);
+
+  var secondrow = [];
+  secondrow.push(finalList[0].name);
+  secondrow.push(finalList[0].schedule[1]);
+  var onerow2 = [];
+  onerow2.push(onerow);
+  onerow2.push(secondrow);
+*/
+  
+ // var wscols = [//define seperately for each column the more lines you add, the more columns are effected
+     // the column width for name should adjust according to which name is the longest and the ones for date should just be standard
+ //   {wch: 3}, // characters: need to get length of each name and then dedcide on the length of longest name
+  //  {wpx: 200} //pixels
+  //];
+
+  let maxNamesLength = 0;
+  for (name in names_month){
+    if (names_month[name].length >= maxNamesLength){
+      maxNamesLength = names_month[name].length;
+    }
+  }
+  
+  let wscols = [];
+  console.log(maxNamesLength);
+  wscols.push({wch: maxNamesLength}); //you could just push like this instead 10 for date and 11 for checkin and checkout time
+
+  for (let i = 0; i < daysInMonth; i++){
+    wscols.push({wch: '10'});
+    wscols.push({wch: '19'});
+  }
+
+  var wb = XLSX.utils.book_new(),
+  ws = XLSX.utils.aoa_to_sheet(excelData); 
+  ws['!cols'] = wscols;
+  /* Add worksheet to workbook */
+  XLSX.utils.book_append_sheet(wb, ws, ws_name);
+
+  /* Write workbook and Download */
+  
+  XLSX.writeFile(wb, filename);
+}
+
+
+var finalList = [];
+
+/*
+get the first name in the localstorage, then check wh;ere in fullList it exists and update schedule, checkin and checkut, if localstorage for that day is empty then update with blank values
+
+
+
+  console.log(curMonthKeyValues);
+  for (k =0; k< curMonthKeyValues.length; k++){
+    var res = curMonthKeyValues[i].split(" ");
+    if (res[0] == months[currentMonth - 1]){
+      if(res[7] == months[currentMonth]){
+           let req_data = localStorage.getItem(curMonthKeyValues[k]);//7-1
+           console.log(req_data);
+           req_data = JSON.parse(req_data);
+           var day = parseInt(res[8], 10);
+           day_start = 7 - day;
+           for (let j = 0; j < names.length; j++){
+            let loop_day = day_start;
+            while(loop_day < 7){
+              schedule_month[j][i_track] = req_data[j].schedule[loop_day];
+              i_track += 1;
+              loop_day += 1
+            }
+            
+           }
+
+           }
+      }
+    }
+    console.log(schedule_month);
+  }
+
+
+*/
+   
+
+  /*
+  var workbook = XLSX.utils.book_new(); //creating new excel book
+	workbook.Props = {		//excel file properties
+		Title: "Shift Schedhule",
+		Subject: "Test file",
+		Author: "Lemon Walker",
+		CreatedDate: new Date()
+	};
+	
+	workbook.SheetNames.push("Test Sheet"); //array of sheet names
+	var wsData = [["herro","world"], ["herro", "again"]]		//create new spreadsheet. each element is a cell
+	var ws = XLSX.utils.aoa_to_sheet(wsData); //adding to sheet
+	workbook.Sheets["Test Sheet"] = ws;	//refering the sheetname and adding the values
+
+	var wbout = XLSX.write(workbook, {bookType:"xlsx", type:"binary"});
+  saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), "test.xlsx");*/
+
+function s2ab(s) {
+  var buf = new ArrayBuffer(s.length);
+  var view = new Uint8Array(buf);
+  for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+  return buf
+}
 
 // ------- DATE MODIFICATION SUPPORTING FUNCTIONS ---------
 

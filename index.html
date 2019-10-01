@@ -10,7 +10,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<!--<script type="text/javascript">
 		window.localStorage.clear();
-		var shift_key = {{ mylist | tojson}};
+		var shift_key = {{ mylist | tojson}}; 
 		shift_key = JSON.parse(shift_key);
 		var shift_schedule = {{ super_array | tojson}};
 		shift_schedule = JSON.parse(shift_schedule);
@@ -146,8 +146,8 @@
     
     <span ><select id="droptest"><option>:)</option><option role="menuitem" href="#" onclick="change()">g</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">d</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">n</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">o</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">l</option><option role="menuitem" href="#" onclick="hallo = aClickStorage(this)">h</option></select></span>
 	<input type = "submit" onClick = "savePractise()" value = "please submit">
-	<button id="excelButton" class = "btn btn-primary col-sm-6">Create Excel</button>
-	<script>
+	<button id="excelButton" class = "btn btn-primary col-sm-6" onclick="createExcel()">Create Excel</button>
+	<!--<script>
 	var workbook = XLSX.utils.book_new(); //creating new excel book
 	workbook.Props = {		//excel file properties
 		Title: "Shift Schedhule",
@@ -172,14 +172,14 @@
 		console.log("button clicked.....");
 		saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), "test.xlsx");
 	});
-	</script>
+	</script>-->
   </div>
 
 	<!--<button name="jump" onclick="jump()">Go</button>-->
 	<!-- Optional JavaScript for bootstrap -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script type="text/javascript" src="./resources/js/index.js"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='date.js') }}"></script>
+<!--	<script type="text/javascript" src="{{ url_for('static', filename='date.js') }}"></script>-->
 	<script type="text/javascript" src="./resources/js/date.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
